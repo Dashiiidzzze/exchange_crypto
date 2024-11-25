@@ -11,10 +11,11 @@ import (
 type ConfigStruct struct {
 	Lots         []string `json:"lots"`
 	DatabaseIP   string   `json:"database_ip"`
+	APIPort      int      `json:"api_port"`
 	DatabasePort int      `json:"database_port"`
 }
 
-func ConfigRead() []string {
+func ConfigRead() ([]string, string, int, int) {
 
 	fmt.Println("Config")
 	file, err := os.ReadFile("config.json")
@@ -28,5 +29,5 @@ func ConfigRead() []string {
 		log.Fatalf("Ошибка при парсинге JSON: %v", err)
 	}
 
-	return config.Lots
+	return config.Lots, config.DatabaseIP, config.APIPort, config.DatabasePort
 }

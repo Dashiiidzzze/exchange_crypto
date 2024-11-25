@@ -1,19 +1,22 @@
 package app
 
 import (
+	"CryptoExchange/internal/config"
 	"errors"
 	"fmt"
 	"io"
 	"net"
 	"net/http"
+	"strconv"
 )
 
 // запрос к базе данных
 // func RquestDataBase(req CreateUserRequest) []byte {
 func RquestDataBase(req string) (string, error) {
-	// Устанавливаем TCP-соединение с базой данных на порту 7432
-	//conn, err := net.Dial("tcp", "localhost:7432")
-	conn, err := net.Dial("tcp", "db:7432")
+	// Устанавливаем TCP-соединение с базой данных на порту
+	_, _, _, dbPort := config.ConfigRead()
+
+	conn, err := net.Dial("tcp", "db:"+strconv.Itoa(dbPort))
 	if err != nil {
 		//http.Error(w, "Не удалось подключиться к базе данных", http.StatusInternalServerError)
 		fmt.Println("Не удалось подключиться к базе данных", http.StatusInternalServerError)

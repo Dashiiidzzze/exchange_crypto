@@ -5,11 +5,12 @@ import (
 	"CryptoExchange/internal/config"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func main() {
 	// формирование таблицы с парами
-	pairList := config.ConfigRead()
+	pairList, _, port, _ := config.ConfigRead()
 	app.Init(pairList)
 
 	// Регистрируем обработчики
@@ -20,7 +21,7 @@ func main() {
 	http.HandleFunc("/balance", app.HandleGetBalance) // GET
 
 	// Запускаем сервер на порту 8080
-	log.Println("Сервер запущен на порту 8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Println("Сервер запущен на порту " + strconv.Itoa(port) + " ...")
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), nil))
 
 }
