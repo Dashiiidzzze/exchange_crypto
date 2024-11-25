@@ -1,6 +1,7 @@
 package app
 
 import (
+	"CryptoExchange/internal/config"
 	"crypto/md5"
 	"crypto/rand"
 	"encoding/hex"
@@ -28,6 +29,30 @@ func generateUserKey(username string) string {
 	return hex.EncodeToString(hash[:])
 }
 
+// Генерация уникального ключа для пользователя
+func assetGen(userKey string) {
+	var reqBDcheck string = "SELECT user.user_id FROM user WHERE user.key = '" + userKey + "'"
+	response, err := RquestDataBase(reqBDcheck)
+	if err != nil {
+		return
+	}
+	response = response[:len(response)-2]
+	lots := config.ConfigRead()
+	for i := 0; i < len(lots); i++ {
+		var reqBDsearch string = "SELECT lot.lot_id FROM lot WHERE lot.name = '" + lots[i] + "'"
+		lotID, err2 := RquestDataBase(reqBDsearch)
+		if err2 != nil {
+			return
+		}
+		lotID = lotID[:len(lotID)-2]
+		var reqBD string = "INSERT INTO user_lot VALUES ('" + response + "', '" + lotID + "', '1000')"
+		_, err3 := RquestDataBase(reqBD)
+		if err3 != nil {
+			return
+		}
+	}
+}
+
 // Функция для создания пользователя
 func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 	// Парсинг JSON-запроса от клиента
@@ -38,15 +63,16 @@ func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(req)
 
-	// Генерация уникального ключа для пользователя
 	userKey := generateUserKey(req.Username)
 
 	var reqBD string = "INSERT INTO user VALUES ('" + req.Username + "', '" + userKey + "')"
 
 	_, err := RquestDataBase(reqBD)
-	if err == nil {
+	if err != nil {
 		return
 	}
+	// генерация активов пользователя
+	assetGen(userKey)
 
 	// Формируем и отправляем JSON-ответ клиенту
 	w.Header().Set("Content-Type", "application/json")
