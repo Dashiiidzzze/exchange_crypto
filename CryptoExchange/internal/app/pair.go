@@ -17,12 +17,11 @@ func HandlePair(w http.ResponseWriter, r *http.Request) {
 	var reqBD string = "SELECT * FROM pair"
 
 	response, err := RquestDataBase(reqBD)
-	if err == nil {
+	if err != nil {
 		return
 	}
-	strResponse := string(response)
 
-	fmt.Println(strResponse)
+	fmt.Println(response)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(strResponse)
+	json.NewEncoder(w).Encode(response)
 }
