@@ -43,8 +43,8 @@ func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 
 	var reqBD string = "INSERT INTO user VALUES ('" + req.Username + "', '" + userKey + "')"
 
-	response := RquestDataBase(reqBD)
-	if response == nil {
+	_, err := RquestDataBase(reqBD)
+	if err == nil {
 		return
 	}
 

@@ -20,16 +20,16 @@ func HandleGetBalance(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var reqUserID string = "SELECT user.key FROM user WHERE user.key = '" + userKey + "'"
-	userID := RquestDataBase(reqUserID)
-	if userID == nil {
+	userID, err := RquestDataBase(reqUserID)
+	if err == nil {
 		http.Error(w, "User unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	var reqBD string = "SELECT user_lot.lot_id user_lot.quantity FROM user_lot WHERE user_lot.user_id = '" + string(userID) + "'"
 
-	response := RquestDataBase(reqBD)
-	if response == nil {
+	response, err2 := RquestDataBase(reqBD)
+	if err2 == nil {
 		return
 	}
 	strResponse := string(response)

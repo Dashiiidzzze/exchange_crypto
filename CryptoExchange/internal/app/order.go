@@ -52,8 +52,8 @@ func HandleOrder(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(req)
 
 		var reqUserID string = "SELECT user.key FROM user WHERE user.key = '" + userKey + "'"
-		userID := RquestDataBase(reqUserID)
-		if userID == nil {
+		userID, err := RquestDataBase(reqUserID)
+		if err == nil {
 			http.Error(w, "User unauthorized", http.StatusUnauthorized)
 			return
 		}
@@ -63,8 +63,8 @@ func HandleOrder(w http.ResponseWriter, r *http.Request) {
 		//var reqBD string = "INSERT INTO order VALUES ('" + string(req.PairID) + "', '" + strconv.FormatFloat(req.Quantity, 'f', -1, 64) + "', '" + req.Price + "', '" + req.Type + "')"
 		var reqBD string = "INSERT INTO order VALUES ('" + stringUserID + "', '" + strconv.Itoa(req.PairID) + "', '" + strconv.FormatFloat(req.Quantity, 'f', -1, 64) + "', '" + strconv.FormatFloat(req.Price, 'f', -1, 64) + "', '" + req.Type + "', 'open')"
 		fmt.Println(reqBD)
-		response := RquestDataBase(reqBD)
-		if response == nil {
+		response, err2 := RquestDataBase(reqBD)
+		if err2 == nil {
 			return
 		}
 		strResponse := string(response)
@@ -85,8 +85,8 @@ func HandleOrder(w http.ResponseWriter, r *http.Request) {
 	} else if r.Method == "GET" { // получение списка ордеров
 		var reqBD string = "SELECT * FROM order"
 
-		response := RquestDataBase(reqBD)
-		if response == nil {
+		response, err := RquestDataBase(reqBD)
+		if err == nil {
 			return
 		}
 		strResponse := string(response)
@@ -109,8 +109,8 @@ func HandleOrder(w http.ResponseWriter, r *http.Request) {
 
 		var reqBD string = "DELETE FROM order WHERE order.order_id = '" + strconv.Itoa(req.OrderID) + "'"
 
-		response := RquestDataBase(reqBD)
-		if response == nil {
+		response, err := RquestDataBase(reqBD)
+		if err == nil {
 			return
 		}
 		strResponse := string(response)

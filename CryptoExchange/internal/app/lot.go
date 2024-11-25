@@ -15,8 +15,8 @@ type LotResponse struct {
 func HandleGetLot(w http.ResponseWriter, r *http.Request) {
 	var reqBD string = "SELECT * FROM lot"
 
-	response := RquestDataBase(reqBD)
-	if response == nil {
+	response, err := RquestDataBase(reqBD)
+	if err == nil {
 		return
 	}
 	strResponse := string(response)

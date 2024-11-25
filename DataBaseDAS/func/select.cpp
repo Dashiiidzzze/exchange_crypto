@@ -114,7 +114,7 @@ void DecartMult(const MyVector<MyVector<MyVector<string>*>*>& tablesData, MyVect
         } else {
             for (int j = 0; j < tab; j++) {
                 for (int k = 0; k < temp.data[j]->len; k++) {
-                    send(clientSocket, (temp.data[j]->data[k] + "   ").c_str(), (temp.data[j]->data[k] + "   ").size(), 0);
+                    send(clientSocket, (temp.data[j]->data[k] + " ").c_str(), (temp.data[j]->data[k] + " ").size(), 0);
                 }
                 //cout << *temp.data[j] << setw(25);
             }

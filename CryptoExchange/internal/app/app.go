@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -9,13 +10,14 @@ import (
 
 // запрос к базе данных
 // func RquestDataBase(req CreateUserRequest) []byte {
-func RquestDataBase(req string) []byte {
+func RquestDataBase(req string) (string, error) {
 	// Устанавливаем TCP-соединение с базой данных на порту 7432
-	conn, err := net.Dial("tcp", "localhost:7432")
+	//conn, err := net.Dial("tcp", "localhost:7432")
+	conn, err := net.Dial("tcp", "db:7432")
 	if err != nil {
 		//http.Error(w, "Не удалось подключиться к базе данных", http.StatusInternalServerError)
 		fmt.Println("Не удалось подключиться к базе данных", http.StatusInternalServerError)
-		return nil
+		return "", errors.New("не удалось подключиться к базе данных")
 	}
 	defer conn.Close() // Закрываем соединение по завершении
 
@@ -27,7 +29,8 @@ func RquestDataBase(req string) []byte {
 	if err != nil {
 		//http.Error(w, "Ошибка при чтении ответа от базы данных", http.StatusInternalServerError)
 		fmt.Println("Ошибка при чтении ответа от базы данных", http.StatusInternalServerError)
-		return nil
+		return "", errors.New("не удалось подключиться к базе данных")
 	}
-	return response
+	str := string(response)
+	return str, nil
 }

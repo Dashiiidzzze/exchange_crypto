@@ -16,8 +16,8 @@ type PairResponse struct {
 func HandlePair(w http.ResponseWriter, r *http.Request) {
 	var reqBD string = "SELECT * FROM pair"
 
-	response := RquestDataBase(reqBD)
-	if response == nil {
+	response, err := RquestDataBase(reqBD)
+	if err == nil {
 		return
 	}
 	strResponse := string(response)
