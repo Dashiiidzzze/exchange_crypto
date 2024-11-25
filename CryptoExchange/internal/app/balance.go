@@ -2,8 +2,8 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"strings"
 )
 
 type BalanceResponse struct {
@@ -19,22 +19,21 @@ func HandleGetBalance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var reqUserID string = "SELECT user.key FROM user WHERE user.key = '" + userKey + "'"
-	userID, err := RquestDataBase(reqUserID)
-	if err == nil {
+	var reqUserID string = "SELECT user.user_id user.key FROM user WHERE user.key = '" + userKey + "'"
+	userIDandKey, err := RquestDataBase(reqUserID)
+	if err != nil {
 		http.Error(w, "User unauthorized", http.StatusUnauthorized)
 		return
 	}
+	userID := strings.Split(userIDandKey, " ")
 
-	var reqBD string = "SELECT user_lot.lot_id user_lot.quantity FROM user_lot WHERE user_lot.user_id = '" + string(userID) + "'"
+	var reqBD string = "SELECT user_lot.lot_id user_lot.quantity FROM user_lot WHERE user_lot.user_id = '" + userID[0] + "'"
 
 	response, err2 := RquestDataBase(reqBD)
-	if err2 == nil {
+	if err2 != nil {
 		return
 	}
-	strResponse := string(response)
 
-	fmt.Println(strResponse)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(strResponse)
+	json.NewEncoder(w).Encode(response)
 }
