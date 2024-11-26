@@ -37,7 +37,7 @@ func assetGen(userKey string) {
 		return
 	}
 	response = response[:len(response)-2]
-	lots, _, _ := config.ConfigRead()
+	lots, _, _, _ := config.ConfigRead()
 	for i := 0; i < len(lots); i++ {
 		var reqBDsearch string = "SELECT lot.lot_id FROM lot WHERE lot.name = '" + lots[i] + "'"
 		lotID, err2 := RquestDataBase(reqBDsearch)

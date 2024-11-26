@@ -35,6 +35,115 @@ type DeleteOrder struct {
 	OrderID int `json:"order_id"`
 }
 
+// // списание средств со счета пользователя
+// func payByOrder(userID string, pairID int, payMoney float64, spisanie bool) error {
+// 	var reqBDlots string = "SELECT pair.firat_lot_id pair.second_lot_id FROM pair WHERE pair.pair_id = '" + strconv.Itoa(pairID) + "'"
+
+// 	lots, err := RquestDataBase(reqBDlots)
+// 	if err != nil {
+// 		return errors.New("не удалось подключиться к базе данных")
+// 	}
+// 	allLots := strings.Split(lots, " ")
+
+// 	// проверка есть ли у пользователя деньги
+// 	var reqBDselect string = "SELECT user_lot.quantity FROM user_lot WHERE user_lot.user_id = '" + userID + "' AND user_lot.lot_id = '" + allLots[1] + "'"
+
+// 	money, err2 := RquestDataBase(reqBDselect)
+// 	if err2 != nil {
+// 		return errors.New("не удалось подключиться к базе данных")
+// 	}
+// 	money = money[:len(money)-2]
+// 	intMoney, _ := strconv.ParseFloat(strings.TrimSpace(money), 64)
+
+// 	if spisanie {
+// 		if intMoney < payMoney {
+// 			return errors.New("недостаточно средств")
+// 		}
+// 	}
+
+// 	// списание (обновление актива на меньшую сумму)
+// 	var reqBDdel string = "DELETE FROM user_lot WHERE user_lot.user_id = '" + userID + "'"
+
+// 	_, err3 := RquestDataBase(reqBDdel)
+// 	if err3 != nil {
+// 		return errors.New("не удалось подключиться к базе данных")
+// 	}
+
+// 	var reqBD string
+// 	if spisanie {
+// 		reqBD = "INSERT INTO user_lot VALUES ('" + userID + "', '" + allLots[1] + "', '" + strconv.FormatFloat(intMoney-payMoney, 'f', -1, 64) + "')"
+// 	} else {
+// 		reqBD = "INSERT INTO user_lot VALUES ('" + userID + "', '" + allLots[1] + "', '" + strconv.FormatFloat(intMoney+payMoney, 'f', -1, 64) + "')"
+// 	}
+// 	_, err3 = RquestDataBase(reqBD)
+// 	if err3 != nil {
+// 		return errors.New("не удалось подключиться к базе данных")
+// 	}
+
+// 	return nil
+// }
+
+// func searchOrder(order_id string, user_id string, pair_id string, quantyty string, price string, types string) {
+// 	var reqBD string
+// 	if types == "buy" {
+// 		reqBD = "SELECT * FROM order WHERE order.pair_id = '" + pair_id + "' AND order.type = 'sell' AND order.closed = 'open'"
+// 	} else {
+// 		reqBD = "SELECT * FROM order WHERE order.pair_id = '" + pair_id + "' AND order.type = 'buy' AND order.closed = 'open'"
+// 	}
+// 	response, err := RquestDataBase(reqBD)
+// 	if err != nil {
+// 		return
+// 	}
+
+// 	rows := strings.Split(response, "\n") // Разделяем строки
+// 	// Парсим каждую строку
+// 	for _, row := range rows {
+// 		fields := strings.Split(row, " ")
+// 		if len(fields) < 7 {
+// 			continue // Пропускаем строки с недостаточным количеством полей
+// 		}
+// 		var orderIDSearch string
+// 		if types == "buy" && price >= rows[4] && quantyty == rows[3] {
+// 			orderIDSearch = rows[0]
+// 		} else if types == "sell" && price <= rows[4] && quantyty == rows[3] {
+// 			orderIDSearch = rows[0]
+// 		}
+// 		if orderIDSearch!= "" {
+// 			var check string = "DELETE FROM order WHERE order.order_id = '" + orderIDSearch + "'"
+
+// 			_, err2 := RquestDataBase(check)
+// 			if err2 != nil {
+// 				return
+// 			}
+
+// 			var check2 string = "DELETE FROM order WHERE order.order_id = '" + order_id + "'"
+
+// 			_, err2 = RquestDataBase(check2)
+// 			if err2 != nil {
+// 				return
+// 			}
+
+// 			var check3 string = "INSERT INTO order VALUES ('" + orderIDSearch + "', '" + rows[1] + "', '" + rows[2] + "', '" + rows[3] + "', '" + rows[4] + "', '" + rows[5] + "', 'close'"
+
+// 			_, err2 = RquestDataBase(check3)
+// 			if err2 != nil {
+// 				return
+// 			}
+
+// 			var check4 string = "INSERT INTO order VALUES ('" + order_id + "', '" + user_id + "', '" + strconv.Itoa(pair_id) + "', '" + strconv.FormatFloat(quantity, 'f', -1, 64) + "', '" + strconv.FormatFloat(price, 'f', -1, 64) + "', 'close')"
+
+// 			_, err2 = RquestDataBase(check4)
+// 			if err2 != nil {
+// 				return
+// 			}
+// 			payByOrder(rows[1], rows[2], rows[3], spisanie bool, aftersearch bool)
+// 		}
+// 	}
+
+// 	// Массив для хранения ордеров
+// 	var orders []GetOrderResponse
+// }
+
 // работа с ордерами
 func HandleOrder(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" { // создание ордера
@@ -59,6 +168,7 @@ func HandleOrder(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "User unauthorized", http.StatusUnauthorized)
 			return
 		}
+		userID = userID[:len(userID)-2]
 
 		// проверка наличия пары в бд
 		var reqPairID string = "SELECT pair.pair_id FROM pair WHERE pair.pair_id = '" + strconv.Itoa(req.PairID) + "'"
@@ -68,7 +178,20 @@ func HandleOrder(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		userID = userID[:len(userID)-2]
+		// здесь списать средства со счета пользователя
+		// payErr := payByOrder(userID, req.PairID, req.Quantity*req.Price, true)
+		// if payErr != nil {
+		// 	http.Error(w, "Not enough funds", http.StatusPaymentRequired)
+		// 	return
+		// }
+
+		// здесь вставить поиск подходящего ордера на рокупку продажу, если нашелся, начисляем новые средства
+		// searchError := searchOrder()
+		// if searchError != nil {
+		// 	http.Error(w, "Not enough funds", http.StatusPaymentRequired)
+		// 	return
+		// }
+
 		var reqBD string = "INSERT INTO order VALUES ('" + userID + "', '" + strconv.Itoa(req.PairID) + "', '" + strconv.FormatFloat(req.Quantity, 'f', -1, 64) + "', '" + strconv.FormatFloat(req.Price, 'f', -1, 64) + "', '" + req.Type + "', 'open')"
 		fmt.Println(reqBD)
 		response, err2 := RquestDataBase(reqBD)
@@ -174,6 +297,7 @@ func HandleOrder(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "access error", http.StatusUnauthorized)
 			return
 		}
+		// order := strings.Split(check, " ")
 
 		var reqBD string = "DELETE FROM order WHERE order.order_id = '" + strconv.Itoa(req.OrderID) + "'"
 
@@ -181,6 +305,17 @@ func HandleOrder(w http.ResponseWriter, r *http.Request) {
 		if err2 != nil {
 			return
 		}
+
+		// здесь вернуть деньги обратно на счет пользователю
+		// здесь списать средства со счета пользователя
+		// floatQuant, _ := strconv.ParseFloat(strings.TrimSpace(order[3]), 64)
+		// floatPrice, _ := strconv.ParseFloat(strings.TrimSpace(order[4]), 64)
+		// num, _ := strconv.Atoi(order[2])
+		// payErr := payByOrder(userID, num, floatQuant*floatPrice, true)
+		// if payErr != nil {
+		// 	http.Error(w, "Not enough funds", http.StatusPaymentRequired)
+		// 	return
+		// }
 
 		// Формируем и отправляем JSON-ответ клиенту
 		w.Header().Set("Content-Type", "application/json")
