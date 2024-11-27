@@ -1,6 +1,7 @@
 package app
 
 import (
+	"CryptoExchange/internal/requestDB"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -21,7 +22,7 @@ func HandleGetBalance(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var reqUserID string = "SELECT user.user_id user.key FROM user WHERE user.key = '" + userKey + "'"
-	userIDandKey, err := RquestDataBase(reqUserID)
+	userIDandKey, err := requestDB.RquestDataBase(reqUserID)
 	if err != nil {
 		http.Error(w, "User unauthorized", http.StatusUnauthorized)
 		return
@@ -30,7 +31,7 @@ func HandleGetBalance(w http.ResponseWriter, r *http.Request) {
 
 	var reqBD string = "SELECT user_lot.lot_id user_lot.quantity FROM user_lot WHERE user_lot.user_id = '" + userID[0] + "'"
 
-	response, err2 := RquestDataBase(reqBD)
+	response, err2 := requestDB.RquestDataBase(reqBD)
 	if err2 != nil {
 		return
 	}

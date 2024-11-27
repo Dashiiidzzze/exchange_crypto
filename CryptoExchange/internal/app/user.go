@@ -2,6 +2,7 @@ package app
 
 import (
 	"CryptoExchange/internal/config"
+	"CryptoExchange/internal/requestDB"
 	"crypto/md5"
 	"crypto/rand"
 	"encoding/hex"
@@ -32,7 +33,7 @@ func generateUserKey(username string) string {
 // Генерация уникального ключа для пользователя
 func assetGen(userKey string) {
 	var reqBDcheck string = "SELECT user.user_id FROM user WHERE user.key = '" + userKey + "'"
-	response, err := RquestDataBase(reqBDcheck)
+	response, err := requestDB.RquestDataBase(reqBDcheck)
 	if err != nil {
 		return
 	}
@@ -40,13 +41,13 @@ func assetGen(userKey string) {
 	lots, _, _, _ := config.ConfigRead()
 	for i := 0; i < len(lots); i++ {
 		var reqBDsearch string = "SELECT lot.lot_id FROM lot WHERE lot.name = '" + lots[i] + "'"
-		lotID, err2 := RquestDataBase(reqBDsearch)
+		lotID, err2 := requestDB.RquestDataBase(reqBDsearch)
 		if err2 != nil {
 			return
 		}
 		lotID = lotID[:len(lotID)-2]
 		var reqBD string = "INSERT INTO user_lot VALUES ('" + response + "', '" + lotID + "', '1000')"
-		_, err3 := RquestDataBase(reqBD)
+		_, err3 := requestDB.RquestDataBase(reqBD)
 		if err3 != nil {
 			return
 		}
@@ -67,7 +68,7 @@ func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 
 	var reqBD string = "INSERT INTO user VALUES ('" + req.Username + "', '" + userKey + "')"
 
-	_, err := RquestDataBase(reqBD)
+	_, err := requestDB.RquestDataBase(reqBD)
 	if err != nil {
 		return
 	}

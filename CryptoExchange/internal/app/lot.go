@@ -1,6 +1,7 @@
 package app
 
 import (
+	"CryptoExchange/internal/requestDB"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -16,7 +17,7 @@ type LotResponse struct {
 func HandleGetLot(w http.ResponseWriter, r *http.Request) {
 	var reqBD string = "SELECT * FROM lot"
 
-	response, err := RquestDataBase(reqBD)
+	response, err := requestDB.RquestDataBase(reqBD)
 	if err != nil {
 		return
 	}

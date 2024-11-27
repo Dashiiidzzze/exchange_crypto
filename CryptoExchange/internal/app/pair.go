@@ -1,6 +1,7 @@
 package app
 
 import (
+	"CryptoExchange/internal/requestDB"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -17,7 +18,7 @@ type PairResponse struct {
 func HandlePair(w http.ResponseWriter, r *http.Request) {
 	var reqBD string = "SELECT * FROM pair"
 
-	response, err := RquestDataBase(reqBD)
+	response, err := requestDB.RquestDataBase(reqBD)
 	if err != nil {
 		return
 	}
