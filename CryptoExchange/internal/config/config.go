@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 )
@@ -16,8 +15,6 @@ type ConfigStruct struct {
 }
 
 func ConfigRead() ([]string, string, int, int) {
-
-	fmt.Println("Config")
 	file, err := os.ReadFile("config.json")
 	if err != nil {
 		log.Fatalf("Не удалось открыть файл: %v", err)

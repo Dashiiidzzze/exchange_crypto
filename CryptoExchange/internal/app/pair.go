@@ -2,8 +2,9 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type PairResponse struct {
@@ -20,8 +21,31 @@ func HandlePair(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+	// Преобразуем ответ базы данных в строки
+	rows := strings.Split(strings.TrimSpace(response), "\n") // Разделяем строки
 
-	fmt.Println(response)
+	// Массив для хранения
+	var pairs []LotResponse
+
+	// Парсим каждую строку
+	for _, row := range rows {
+		fields := strings.Split(row, " ")
+		if len(fields) < 2 {
+			continue // Пропускаем строки с недостаточным количеством полей
+		}
+
+		// Преобразуем каждое поле и заполняем структуру
+		lotID, _ := strconv.Atoi(strings.TrimSpace(fields[0]))
+		name := strings.TrimSpace(fields[1])
+
+		order := LotResponse{
+			Lot_id: lotID,
+			Name:   name,
+		}
+
+		pairs = append(pairs, order) // Добавляем ордер в массив
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(pairs)
 }

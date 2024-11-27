@@ -9,5 +9,6 @@
         "DOGE"
     ],
     "database_ip":"localhost",
+    "api_port":8080,
     "database_port":7432
 }
