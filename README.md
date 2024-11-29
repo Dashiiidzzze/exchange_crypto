@@ -47,3 +47,15 @@ curl -X DELETE http://localhost:8080/order \
 
 Получение информации об активах пользователя:
 `curl -X GET http://localhost:8080/balance -H "Content-Type: application/json" -H "X-USER-KEY: qwertykey"`
+
+## Торговые роботы
+
+Торговые робот находятся в папке TraidingRobots
+
+в папке marketRobot находится робот, имитирующий колебания биржи
+
+Запуск: `go run TradingRobots/marketRobot/main.go`
+
+в папке userRobot находится торговый робот для пользователя, расчитанный на максимальную прибыль по лоту RUB
+
+Запуск: `go run TraidingRobot/userRobot/main.go`
