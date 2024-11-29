@@ -2,7 +2,7 @@
 
 для запуска сервера на свооем пк:
 
-1) `git clone https://github.com/Dashiiidzzze/exchange_crypto/tree/main`
+1) `git clone https://github.com/Dashiiidzzze/exchange_crypto.git`
 2) `docker compose up --build`
 3) начать проводить HTTP запросы (через браузер или утилиту curl)
 
