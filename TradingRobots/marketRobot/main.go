@@ -84,7 +84,6 @@ func main() {
 	pairsResp, _ := getRequest("/pair")
 	var pairs []Pair
 	json.Unmarshal(pairsResp, &pairs)
-	fmt.Println("Доступные пары:", pairs)
 
 	// Бесконечный цикл для работы случайного бота
 	for {
