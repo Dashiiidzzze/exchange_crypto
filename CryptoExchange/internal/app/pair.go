@@ -26,25 +26,27 @@ func HandlePair(w http.ResponseWriter, r *http.Request) {
 	rows := strings.Split(strings.TrimSpace(response), "\n") // Разделяем строки
 
 	// Массив для хранения
-	var pairs []LotResponse
+	var pairs []PairResponse
 
 	// Парсим каждую строку
 	for _, row := range rows {
 		fields := strings.Split(row, " ")
-		if len(fields) < 2 {
+		if len(fields) < 3 {
 			continue // Пропускаем строки с недостаточным количеством полей
 		}
 
 		// Преобразуем каждое поле и заполняем структуру
-		lotID, _ := strconv.Atoi(strings.TrimSpace(fields[0]))
-		name := strings.TrimSpace(fields[1])
+		pairID, _ := strconv.Atoi(strings.TrimSpace(fields[0]))
+		sale_lot_id, _ := strconv.Atoi(strings.TrimSpace(fields[1]))
+		buy_lot_id, _ := strconv.Atoi(strings.TrimSpace(fields[2]))
 
-		order := LotResponse{
-			Lot_id: lotID,
-			Name:   name,
+		pa := PairResponse{
+			Pair_id:     pairID,
+			Sale_lot_id: sale_lot_id,
+			Buy_lot_id:  buy_lot_id,
 		}
 
-		pairs = append(pairs, order) // Добавляем ордер в массив
+		pairs = append(pairs, pa) // Добавляем ордер в массив
 	}
 
 	w.Header().Set("Content-Type", "application/json")
