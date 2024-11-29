@@ -26,8 +26,8 @@ type GetOrderResponse struct {
 	UserID   int     `json:"user_id"`
 	PairID   int     `json:"lot_id"`
 	Quantity float64 `json:"quantity"`
-	Type     string  `json:"type"`
 	Price    float64 `json:"price"`
+	Type     string  `json:"type"`
 	Closed   string  `json:"closed"`
 }
 
@@ -120,7 +120,7 @@ func HandleOrder(w http.ResponseWriter, r *http.Request) {
 		})
 
 	} else if r.Method == "GET" { // получение списка ордеров
-		reqBD := "SELECT * FROM order"
+		reqBD := "SELECT * FROM order WHERE order.closed = 'open'"
 
 		// Имитируем вызов базы данных
 		response, err := requestDB.RquestDataBase(reqBD)
@@ -147,8 +147,8 @@ func HandleOrder(w http.ResponseWriter, r *http.Request) {
 			userID, _ := strconv.Atoi(strings.TrimSpace(fields[1]))
 			pairID, _ := strconv.Atoi(strings.TrimSpace(fields[2]))
 			quantity, _ := strconv.ParseFloat(strings.TrimSpace(fields[3]), 64)
-			orderType := strings.TrimSpace(fields[4])
-			price, _ := strconv.ParseFloat(strings.TrimSpace(fields[5]), 64)
+			orderType := strings.TrimSpace(fields[5])
+			price, _ := strconv.ParseFloat(strings.TrimSpace(fields[4]), 64)
 			closed := strings.TrimSpace(fields[6])
 
 			order := GetOrderResponse{
