@@ -1,0 +1,41 @@
+services:
+  api:
+    build:
+      context: ./CryptoExchange      # Путь к Dockerfile
+    # ports:
+    #   - "8080:8080"                  # Проброс порта
+    volumes:
+      - ./CryptoExchange/config.json:/app/config.json   # монтируем папку для просмотра внутри контейнера
+    depends_on:
+      - db                           # Сначала запускается база данных
+    deploy:
+      replicas: 4
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 2
+        delay: 10s
+
+  db:
+    build:
+      context: ./DataBaseDAS               # Путь к Dockerfile вашей базы данных
+    ports:
+      - "7432:7432"                     # Проброс порта TCP сервера
+    volumes:
+      - ./DataBaseDAS/exchange:/app/exchange # Том для хранения данных
+      - ./DataBaseDAS/schema.json:/app/schema.json
+    restart: on-failure                  # Перезапуск при сбое
+
+  nginx: 
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "81:81"
+    depends_on:
+      - api
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    environment:
+      - NGINX_ENTRYPOINT_QUIET_LOGS=1        # Отключаем шумные логи entrypoint
+    command: [ "nginx", "-g", "daemon off;" ] # Явно запускаем NGINX с вашим конфигом
+    restart: on-failure
